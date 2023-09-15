@@ -4,10 +4,12 @@ README
 - the hexbins have color. more green = more walkable, more red = less walkable.
 - walkability is based off of these things:
 	
-	- number of restaurants
+	- number of businesses  
 		- https://data.lacity.org/A-Prosperous-City/Map-of-Restaurants/ycz4-j47g
 		- https://data.lacity.org/A-Prosperous-City/Restaurants-in-LA/ieer-tbdq
-		- more restaurants => more walkable.
+		- https://data.lacity.org/Administration-Finance/Listing-of-All-Businesses/r4uk-afju
+		- I would be picky with the type of business. Will only pick restaurants, parks, groceries, and related items. Exhaustive list to follow.
+		- more businesses => more walkable.
 		- weight: 40%
 
 
