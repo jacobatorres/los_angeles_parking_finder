@@ -2,7 +2,7 @@ README
 
 - idea is that you go to a website, and it shows los angeles but classified to hexbins
 - the hexbins have color. more green = more walkable, more red = less walkable.
-- walkability is based off of these things:
+- walkability is based off of these things: 
 	
 	- number of businesses  
 		- https://data.lacity.org/A-Prosperous-City/Map-of-Restaurants/ycz4-j47g
