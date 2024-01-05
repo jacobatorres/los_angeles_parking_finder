@@ -1,3 +1,4 @@
+a
 The idea is that you go to a website, and it shows los angeles classified to hexbins. The hexbins have color, more green = more walkable, more red = less walkable.
 Walkability is based off of these things:
 	
