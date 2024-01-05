@@ -2,6 +2,10 @@ import pandas as pd
 from sodapy import Socrata
 import boto3
 
+import pandas as pd
+from sodapy import Socrata
+import psycopg2
+
 
 
 
@@ -45,8 +49,11 @@ def get_secret(secret_name, region):
 
 app_val_token = get_secret("app_token", "us-east-1")
 lacity_password = get_secret("data_lacity_pw", "us-east-1")
+psql_password = get_secret("psql_pw", "us-east-1")
 
 # from https://dev.socrata.com/foundry/data.lacity.org/e7h6-4a3e
+# LADOT Parking Meter Occupancy
+
 client = Socrata(
 		"data.lacity.org",
 		app_val_token,
@@ -58,7 +65,65 @@ client = Socrata(
 results = client.get("e7h6-4a3e", limit=100)
 print("here")
 results_df = pd.DataFrame.from_records(results)
+results_df = results_df.to_numpy()
+
+
+client = boto3.client('rds')
+response = client.describe_db_instances()
+db_endpoint = ""
+for db_instance in response['DBInstances']:
+	db_endpoint = db_instance['Endpoint']['Address']
+	if "terraform" in db_endpoint:
+		break 
+
+print(db_endpoint)
+
+try:
+	conn = psycopg2.connect(
+			host=db_endpoint,
+			database="tutorial", 
+			user="da_admin",
+			password=psql_password)
+	print("was able to connect")
+except Exception as e:
+	print("error when connecting")
+	print(e)
+	exit(1)
 
 
 
-print(results_df)
+# make the table
+
+cur = conn.cursor()
+cur.execute("CREATE TABLE IF NOT EXISTS spacestate_2 ( \
+	space_id VARCHAR(100) NOT NULL, \
+	event_time VARCHAR(100) NOT NULL, \
+	occupancy_state VARCHAR(40) NOT NULL)")
+conn.commit()
+
+print("table made")
+
+
+
+for i in range(0, len(results_df)):
+
+	space_id = results_df[i][0]
+	event_time = results_df[i][1]
+	occupancy_state = results_df[i][2]
+
+	print(" {} {} {} ".format(space_id, event_time, occupancy_state))
+
+	sqlforinsert = """INSERT INTO spacestate_2 (space_id, event_time, occupancy_state)  VALUES('{space_id}', '{event_time}', '{occupancy_state}')""".format(space_id = space_id, event_time = event_time, occupancy_state = occupancy_state)
+	print(sqlforinsert)
+
+
+	cur = conn.cursor()
+	cur.execute(sqlforinsert)
+	conn.commit()
+
+cur.close()
+conn.commit()
+
+
+print("also inserted data")
+
