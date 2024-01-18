@@ -3,10 +3,10 @@ The idea is that you go to a website, and it shows los angeles classified to hex
 Walkability is based off of these things:
 	
 1. Number of Active Businesses  
-	-  https://data.lacity.org/Administration-Finance/Listing-of-All-Businesses/r4uk-afju
-	- Will only pick restaurants, parks, groceries, and related items. Exhaustive list to follow.
+	- https://data.lacity.org/Administration-Finance/Listing-of-All-Businesses/r4uk-afju
+	- Will only pick restaurants, parks, groceries, and related items. This dataset has a column called "NAICS" which shows the type of business a record is. I will only filter out these columns: 44-45 (Retail Trade), 71 (Arts, Entertainment, and Recreation), 72 (Accommodation and Food Services). 
 	- more businesses => more walkable.
-	- some restaurants close, this counts to that.
+	- some businesses have closed; this counts to that.
 
 
 2. Number of Parking
