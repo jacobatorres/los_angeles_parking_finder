@@ -46,97 +46,108 @@ def get_secret(secret_name, region):
 
 	return get_secret_value_response['SecretString']
 
+def connect_to_la_city_api(app_val_token, lacity_password):
+	# LADOT Parking Meter Occupancy
+	client = Socrata(
+			"data.lacity.org",
+			app_val_token,
+			username="jacobangelo_torres@yahoo.com",
+			password=lacity_password,
+			timeout=10
+	)
+
+	return client
+
+def get_data_from_la_city(client, url_suffix, limit_value):
+	return client.get(url_suffix, limit=limit_value)
+
+def show_data_sample(data, columns):
+	results_df = pd.DataFrame.from_records(data)
+	print(results_df[columns])
+
+def connect_to_psql_db(psql_password):
+	client = boto3.client('rds')
+	response = client.describe_db_instances()
+	db_endpoint = ""
+	for db_instance in response['DBInstances']:
+		db_endpoint = db_instance['Endpoint']['Address']
+		if "terraform" in db_endpoint:
+			break 
+
+	try:
+		conn = psycopg2.connect(
+				host=db_endpoint,
+				database="tutorial", 
+				user="da_admin",
+				password=psql_password)
+		print("was able to connect")
+	except Exception as e:
+		print("error when connecting")
+		print(e)
+		exit(1)
+
+	return conn
+
+def run_sql(conn, sql_to_run):
+	try:
+		cur = conn.cursor()
+		cur.execute(sql_to_run)
+		conn.commit()
+		print("sql successfully ran:")
+		print(sql_to_run)
+	except Exception as e:
+		print("error when running the sql: ")
+		print(sql_to_run)
+		print(e)
+		exit(1)
+
+
+
+data_code_dictionary = {
+
+	"business": ["r4uk-afju", ["location_account", "naics", "location"]],
+
+	"parking_spot_loc": ["s49e-q6j2", ["spaceid", "latlng"]],
+
+	"parking_spot_archived": ["cj8s-ivry", ["SpaceID", "EventTime_Local", "EventTime_UTC", "OccupancyState"]], # will scrape separately
+
+	"parking_spot_realtime": ["e7h6-4a3e", ["spaceid", "eventtime", "occupancystate"]],
+
+	"crime": ["amvf-fr72", ["rpt_id", "lat", "lon", "arst_date"]]
+
+}
+
+psql_password = get_secret("psql_password_official", "us-east-1")
 
 app_val_token = get_secret("app_token_val_official", "us-east-1")
 lacity_password = get_secret("data_lacity_password_official", "us-east-1")
-psql_password = get_secret("psql_password_official", "us-east-1")
+client = connect_to_la_city_api(app_val_token, lacity_password)
 
-# from https://dev.socrata.com/foundry/data.lacity.org/e7h6-4a3e
-# LADOT Parking Meter Occupancy
-print("asd")
-client = Socrata(
-		"data.lacity.org",
-		app_val_token,
-		username="jacobangelo_torres@yahoo.com",
-		password=lacity_password,
-		timeout=10
-)
+business_results = get_data_from_la_city(client, data_code_dictionary['business'][0], 10)
+show_data_sample(business_results, data_code_dictionary['business'][1])
 
-results = client.get("amvf-fr72", limit=10)
-results_df = pd.DataFrame.from_records(results)
-print("here")
-print("columns are ")
-print(results_df.columns)
+parking_spot_loc_results = get_data_from_la_city(client, data_code_dictionary['parking_spot_loc'][0], 10)
+show_data_sample(parking_spot_loc_results, data_code_dictionary['parking_spot_loc'][1])
 
-print("sample data")
-print(results_df)
-
-# print(results_df[['spaceid', 'latlng', 'metertype']])
-print(results_df[['rpt_id', 'lat', 'lon', 'arst_date']])
+parking_spot_realtime_results = get_data_from_la_city(client, data_code_dictionary['parking_spot_realtime'][0], 10)
+show_data_sample(parking_spot_realtime_results, data_code_dictionary['parking_spot_realtime'][1])
 
 
-exit(1)
+crime_results = get_data_from_la_city(client, data_code_dictionary['crime'][0], 10)
+show_data_sample(crime_results, data_code_dictionary['crime'][1])
 
-results_df = results_df.to_numpy()
+
+conn = connect_to_psql_db(psql_password)
+
+# create business table, parking table, crime table
+run_sql(conn, create_business_data_table_txt)
+
+run_sql(conn, create_parking_data_table_txt)
+
+run_sql(conn, create_crime_data_table_txt)
 
 
 
-client = boto3.client('rds')
-response = client.describe_db_instances()
-db_endpoint = ""
-for db_instance in response['DBInstances']:
-	db_endpoint = db_instance['Endpoint']['Address']
-	if "terraform" in db_endpoint:
-		break 
-
-print(db_endpoint)
-
-try:
-	conn = psycopg2.connect(
-			host=db_endpoint,
-			database="tutorial", 
-			user="da_admin",
-			password=psql_password)
-	print("was able to connect")
-except Exception as e:
-	print("error when connecting")
-	print(e)
-	exit(1)
 
 
-
-# make the table
-
-cur = conn.cursor()
-cur.execute("CREATE TABLE IF NOT EXISTS spacestate_2 ( \
-	space_id VARCHAR(100) NOT NULL, \
-	event_time VARCHAR(100) NOT NULL, \
-	occupancy_state VARCHAR(40) NOT NULL)")
-conn.commit()
-
-print("table made")
-
-
-
-for i in range(0, len(results_df)):
-
-	space_id = results_df[i][0]
-	event_time = results_df[i][1]
-	occupancy_state = results_df[i][2]
-
-	print(" {} {} {} ".format(space_id, event_time, occupancy_state))
-
-	sqlforinsert = """INSERT INTO spacestate_2 (space_id, event_time, occupancy_state)  VALUES('{space_id}', '{event_time}', '{occupancy_state}')""".format(space_id = space_id, event_time = event_time, occupancy_state = occupancy_state)
-	print(sqlforinsert)
-
-
-	cur = conn.cursor()
-	cur.execute(sqlforinsert)
-	conn.commit()
-
-cur.close()
-conn.commit()
-
-
-print("also inserted data")
 
