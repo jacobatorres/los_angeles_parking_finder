@@ -6,7 +6,7 @@ import pandas as pd
 from sodapy import Socrata
 import psycopg2
 
-
+from psql_create_tables import create_business_data_table_txt, create_parking_data_table_txt, create_crime_data_table_txt
 
 
 def get_secret(secret_name, region):
@@ -47,13 +47,13 @@ def get_secret(secret_name, region):
 	return get_secret_value_response['SecretString']
 
 
-app_val_token = get_secret("app_token", "us-east-1")
-lacity_password = get_secret("data_lacity_pw", "us-east-1")
-psql_password = get_secret("psql_pw", "us-east-1")
+app_val_token = get_secret("app_token_val_official", "us-east-1")
+lacity_password = get_secret("data_lacity_password_official", "us-east-1")
+psql_password = get_secret("psql_password_official", "us-east-1")
 
 # from https://dev.socrata.com/foundry/data.lacity.org/e7h6-4a3e
 # LADOT Parking Meter Occupancy
-
+print("asd")
 client = Socrata(
 		"data.lacity.org",
 		app_val_token,
@@ -62,10 +62,23 @@ client = Socrata(
 		timeout=10
 )
 
-results = client.get("e7h6-4a3e", limit=100)
-print("here")
+results = client.get("amvf-fr72", limit=10)
 results_df = pd.DataFrame.from_records(results)
+print("here")
+print("columns are ")
+print(results_df.columns)
+
+print("sample data")
+print(results_df)
+
+# print(results_df[['spaceid', 'latlng', 'metertype']])
+print(results_df[['rpt_id', 'lat', 'lon', 'arst_date']])
+
+
+exit(1)
+
 results_df = results_df.to_numpy()
+
 
 
 client = boto3.client('rds')
