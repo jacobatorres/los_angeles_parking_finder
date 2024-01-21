@@ -81,16 +81,16 @@ def connect_to_psql_db(psql_password):
 
 	return conn
 
-def run_sql(conn, sql_to_run):
+def run_sql(conn, sql_to_run, params = ()):
 	try:
 		cur = conn.cursor()
-		cur.execute(sql_to_run)
+		cur.execute(sql_to_run, params)
 		conn.commit()
-		print("sql successfully ran:")
-		print(sql_to_run)
+		print("sql successfully ran.")
 	except Exception as e:
 		print("error when running the sql: ")
 		print(sql_to_run)
 		print(e)
-		exit(1)
+		conn.rollback()
+		return e
 
