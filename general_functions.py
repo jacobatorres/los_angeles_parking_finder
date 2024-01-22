@@ -2,9 +2,11 @@ import boto3
 from sodapy import Socrata
 import pandas as pd
 import psycopg2
+from botocore.exceptions import ClientError
+
 
 def get_secret(secret_name, region):
-	print("stats are  {} {}".format(secret_name, region))
+	print("Getting secret {} from {}".format(secret_name, region))
 
 	session = boto3.session.Session()
 	client = session.client(
@@ -88,8 +90,9 @@ def run_sql(conn, sql_to_run, params = ()):
 		conn.commit()
 		print("sql successfully ran.")
 	except Exception as e:
-		print("error when running the sql: ")
+		print("error when running the sql:")
 		print(sql_to_run)
+		print(params)
 		print(e)
 		conn.rollback()
 		return e

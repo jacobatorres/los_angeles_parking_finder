@@ -72,11 +72,13 @@ CREATE TABLE IF NOT EXISTS business_data (
 
 create_parking_data_table_txt = """
 CREATE TABLE IF NOT EXISTS parking_data (
-	space_id VARCHAR ( 7 ) PRIMARY KEY,
+	event_id int not null generated always as identity (increment by 1),
+	space_id VARCHAR ( 7 ), 
 	lat float, 
 	lng float,
 	event_time timestamptz,
-	occupancy_state VARCHAR ( 10 )
+	occupancy_state VARCHAR ( 10 ),
+	PRIMARY KEY (space_id,event_time)
 );
 """
 
