@@ -1,42 +1,13 @@
-a
-The idea is that you go to a website, and it shows los angeles classified to hexbins. The hexbins have color, more green = more walkable, more red = less walkable.
-Walkability is based off of these things:
+The app will ask for these parameters: the general location of where you want to park, when you want to park, and the radius of parking (setting this to either 1 mile or 0.5 mile for simplicity). Then it will use data from the Lacity website to provide you the top parking areas that most likely has parking, and the top business areas that might have parking.
+
+
+Datasets used:
 	
-1. Number of Active Businesses  
+1. Active Businesses  
 	- https://data.lacity.org/Administration-Finance/Listing-of-All-Businesses/r4uk-afju
-	- Will only pick restaurants, parks, groceries, and related items. This dataset has a column called "NAICS" which shows the type of business a record is. I will only filter out these columns: 44-45 (Retail Trade), 71 (Arts, Entertainment, and Recreation), 72 (Accommodation and Food Services). 
-	- more businesses => more walkable.
-	- some businesses have closed; this counts to that.
+	- Will only pick restaurants, parks, groceries, and related items. This dataset has a column called "NAICS" which shows the type of business a record is. I will only filter these columns: 44-45 (Retail Trade), 71 (Arts, Entertainment, and Recreation), 72 (Accommodation and Food Services). Might improve on this later.
 
 
-2. Number of Parking
+2. Parking
 	- https://data.lacity.org/Transportation/LADOT-Metered-Parking-Inventory-Policies/s49e-q6j2 (has SpaceID, LatLong)
-	- https://data.lacity.org/Transportation/LADOT-Parking-Meter-Occupancy-Archive/cj8s-ivry (has SpaceID, Time, OccupancyState) (merge with #1)
 	- https://data.lacity.org/Transportation/LADOT-Parking-Meter-Occupancy/e7h6-4a3e (has SpaceID, Time, OccupancyState) (merge with #1)
-	- less parking = more walkable.
-
-
-3. Crime
-	- https://data.lacity.org/Public-Safety/Arrest-Data-from-2020-to-Present/amvf-fr72
-	- less crime => more walkable. 
-	- you can filter by last week, last month, last year, last three years
-
-
-
-On Processing the Data
-
-Will only get data from 2020 onwards, since that's the year where all three metrics are more complete.
-
-The links/data above can be split into two: the archived data and the real-time data. Archived data is only:
-https://data.lacity.org/Transportation/LADOT-Parking-Meter-Occupancy-Archive/cj8s-ivry 
-
-Real-time data is:
-https://data.lacity.org/Administration-Finance/Listing-of-All-Businesses/r4uk-afju
-https://data.lacity.org/Transportation/LADOT-Parking-Meter-Occupancy/e7h6-4a3e
-https://data.lacity.org/Public-Safety/Arrest-Data-from-2020-to-Present/amvf-fr72
-
-For archived data, it's already finished data so I'll made an adhoc script to put them in the database. For the real-time data, I'll use Airflow to get data given a specific interval.
-
-
-
-
