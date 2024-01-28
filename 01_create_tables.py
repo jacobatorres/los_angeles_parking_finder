@@ -16,8 +16,8 @@ data_code_dictionary = {
 }
 
 
-app_val_token = get_secret("app_token_val_official", "us-east-1")
-lacity_password = get_secret("data_lacity_password_official", "us-east-1")
+app_val_token = get_secret("app_token_value", "us-east-1")
+lacity_password = get_secret("data_lacity_password_value", "us-east-1")
 client = connect_to_la_city_api(app_val_token, lacity_password)
 
 business_results = get_data_from_la_city(client, data_code_dictionary['business'][0], 10)
@@ -33,7 +33,7 @@ crime_results = get_data_from_la_city(client, data_code_dictionary['crime'][0], 
 show_data_sample(crime_results, data_code_dictionary['crime'][1])
 
 
-psql_password = get_secret("psql_password_official", "us-east-1")
+psql_password = get_secret("psql_password_value", "us-east-1")
 conn = connect_to_psql_db(psql_password)
 
 # create business table, parking table, crime table

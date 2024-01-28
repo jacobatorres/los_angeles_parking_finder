@@ -58,6 +58,7 @@ def get_data_from_la_city(client, url_suffix, limit_value):
 
 def show_data_sample(data, columns):
 	results_df = pd.DataFrame.from_records(data)
+	print(results_df.columns)
 	print(results_df[columns])
 
 def connect_to_psql_db(psql_password):
