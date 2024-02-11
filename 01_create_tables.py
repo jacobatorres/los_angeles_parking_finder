@@ -3,7 +3,7 @@ from general_functions import *
 
 data_code_dictionary = {
 
-	"business": ["r4uk-afju", ["location_account", "naics", "location"]],
+	"business": ["r4uk-afju", ["location_account", "naics", "primary_naics_description", "location"]],
 
 	"parking_spot_loc": ["s49e-q6j2", ["spaceid", "latlng"]],
 
@@ -22,6 +22,10 @@ client = connect_to_la_city_api(app_val_token, lacity_password)
 
 business_results = get_data_from_la_city(client, data_code_dictionary['business'][0], 10)
 show_data_sample(business_results, data_code_dictionary['business'][1])
+
+
+
+exit(1)
 
 parking_spot_loc_results = get_data_from_la_city(client, data_code_dictionary['parking_spot_loc'][0], 10)
 show_data_sample(parking_spot_loc_results, data_code_dictionary['parking_spot_loc'][1])

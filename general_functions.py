@@ -60,6 +60,7 @@ def show_data_sample(data, columns):
 	results_df = pd.DataFrame.from_records(data)
 	print(results_df.columns)
 	print(results_df[columns])
+	print(results_df.loc[0])
 
 def connect_to_psql_db(psql_password):
 	client = boto3.client('rds')
