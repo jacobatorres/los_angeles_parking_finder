@@ -1,4 +1,4 @@
-from psql_create_tables import create_business_data_table_txt, create_parking_data_table_txt, create_crime_data_table_txt
+from psql_create_tables import create_parking_location_table, create_parking_rt_table, business_location_table
 from general_functions import *
 
 data_code_dictionary = {
@@ -23,10 +23,6 @@ client = connect_to_la_city_api(app_val_token, lacity_password)
 business_results = get_data_from_la_city(client, data_code_dictionary['business'][0], 10)
 show_data_sample(business_results, data_code_dictionary['business'][1])
 
-
-
-exit(1)
-
 parking_spot_loc_results = get_data_from_la_city(client, data_code_dictionary['parking_spot_loc'][0], 10)
 show_data_sample(parking_spot_loc_results, data_code_dictionary['parking_spot_loc'][1])
 
@@ -41,14 +37,9 @@ psql_password = get_secret("psql_password_value", "us-east-1")
 conn = connect_to_psql_db(psql_password)
 
 # create business table, parking table, crime table
-run_sql(conn, create_business_data_table_txt)
+run_sql(conn, create_parking_location_table)
 
-run_sql(conn, create_parking_data_table_txt)
+run_sql(conn, create_parking_rt_table)
 
-run_sql(conn, create_crime_data_table_txt)
-
-
-
-
-
+run_sql(conn, business_location_table)
 

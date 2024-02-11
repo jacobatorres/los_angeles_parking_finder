@@ -41,9 +41,10 @@ CB1181			2024-01-18T05:23:58.000 VACANT
 --- business_location ---
 * list of businesses
 * Only getting businesses with these naics codes, because I think they're the ones with more public parking:
-42* Wholesale Trade
-44*-45* Retail Trade
-71* Arts Entertainment Recrration
+42* 		Wholesale Trade
+44*-45* 	Retail Trade
+71* 		Arts Entertainment Recrration
+812* 		Personal and Laundry Services
 * derived from https://data.lacity.org/Administration-Finance/Listing-of-All-Businesses/r4uk-afju
 location_account   naics   location
 0003217523-0001-2  444130  {'latitude': '33.9581', 'longitude': '-118.292...
