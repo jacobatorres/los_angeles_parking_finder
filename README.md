@@ -19,6 +19,3 @@ Datasets used:
 	- https://data.lacity.org/Transportation/LADOT-Metered-Parking-Inventory-Policies/s49e-q6j2 (has SpaceID, LatLong)
 	- https://data.lacity.org/Transportation/LADOT-Parking-Meter-Occupancy/e7h6-4a3e (has SpaceID, Time, OccupancyState) (merge with #1)
 
-
-- app just takes parking data (last 3 months ie real time data) and the business data x
-- given a place (lat long), time today, radius, give me th e top 3 parking areas (maybe via hexbins) and top 3 business areas x
