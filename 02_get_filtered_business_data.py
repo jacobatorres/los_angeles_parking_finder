@@ -14,23 +14,24 @@ data_code_dictionary = {
 
 }
 
-# Create a DataFrame
-data = {"Name": ["John", "Jane", "Mary", "Adam"],
-        "City": ["New York", "Los Angeles", "Chicago", "Houston"]}
-df = pd.DataFrame(data)
-
-# Filter the DataFrame by multiple string values in the "City" column
-filtered_df = df[df["City"].str.contains("Chi|Hou")]
-print(df)
-print(filtered_df)
-
 
 
 app_val_token = get_secret("app_token_value", "us-east-1")
 lacity_password = get_secret("data_lacity_password_value", "us-east-1")
 client = connect_to_la_city_api(app_val_token, lacity_password)
 
-business_results = get_data_from_la_city(client, data_code_dictionary['business'][0], 0)
-
+business_results = get_data_from_la_city(client, data_code_dictionary['business'][0], 100, 0, "location_account ASC")
 results_df = pd.DataFrame.from_records(business_results)
 print(results_df)
+
+
+
+# https://dev.socrata.com/docs/queries/offset
+for i in range(0,100, 3):
+	business_results_2 = get_data_from_la_city(client, data_code_dictionary['business'][0], 3, i, "location_account ASC")
+	results_df_2 = pd.DataFrame.from_records(business_results_2)
+	print(results_df_2)
+
+
+
+
