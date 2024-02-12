@@ -54,7 +54,7 @@ def connect_to_la_city_api(app_val_token, lacity_password):
 	return client
 
 def get_data_from_la_city(client, url_suffix, limit_value):
-	return client.get(url_suffix, limit=limit_value)
+	return client.get(url_suffix)
 
 def show_data_sample(data, columns):
 	results_df = pd.DataFrame.from_records(data)
