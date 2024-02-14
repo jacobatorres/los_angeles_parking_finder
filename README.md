@@ -4,7 +4,7 @@ The app will ask for these parameters: the general location of where you want to
 Datasets used:
 	
 1. Active Businesses  
-	- https://data.lacity.org/Administration-Finance/Listing-of-All-Businesses/r4uk-afju
+	- https://data.lacity.org/Administration-Finance/Listing-of-Active-Businesses/6rrh-rzua
 	- Will only pick restaurants, parks, groceries, and related items. This dataset has a column called "NAICS" which shows the type of business a record is. The NAICS (https://www.census.gov/naics/?58967?yearbck=1997) assigns codes to categories of business, and I'll only get these categories:
 	```
 	42* 		Wholesale Trade

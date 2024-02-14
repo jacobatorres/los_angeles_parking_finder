@@ -45,7 +45,7 @@ CB1181			2024-01-18T05:23:58.000 VACANT
 44*-45* 	Retail Trade
 71* 		Arts Entertainment Recrration
 812* 		Personal and Laundry Services
-* derived from https://data.lacity.org/Administration-Finance/Listing-of-All-Businesses/r4uk-afju
+* derived from https://data.lacity.org/Administration-Finance/Listing-of-Active-Businesses/6rrh-rzua
 location_account   naics   location
 0003217523-0001-2  444130  {'latitude': '33.9581', 'longitude': '-118.292...
 * will get only those businesses with relevent naics code (those with public parking, etc.). Full list of codes to follow.
