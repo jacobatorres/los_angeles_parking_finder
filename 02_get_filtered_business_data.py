@@ -20,10 +20,9 @@ app_val_token = get_secret("app_token_value", "us-east-1")
 lacity_password = get_secret("data_lacity_password_value", "us-east-1")
 client = connect_to_la_city_api(app_val_token, lacity_password)
 
-# business_results = get_data_from_la_city(client, data_code_dictionary['business'][0], 100, 0, "location_account ASC")
-# results_df = pd.DataFrame.from_records(business_results)
-# print(results_df)
 
+psql_password = get_secret("psql_password_value", "us-east-1")
+conn = connect_to_psql_db(psql_password)
 
 limit_offset_counter = 1
 
@@ -36,11 +35,16 @@ for i in range(0,10, limit_offset_counter):
 	while mini_counter < limit_offset_counter:
 
 		try:
-			print(results_df_2.loc[mini_counter])
 			location_id = results_df_2.loc[mini_counter]['location_account']
-			lat = results_df_2.loc[mini_counter]['location_1']['latitude']
-			lng = results_df_2.loc[mini_counter]['location_1']['longitude']
-			print("{} {} {}".format(location_id, lat, lng))
+			naics = int(float(results_df_2.loc[mini_counter]['naics']))
+			lat = float(results_df_2.loc[mini_counter]['location_1']['latitude'])
+			lng = float(results_df_2.loc[mini_counter]['location_1']['longitude'])
+			print("{} {} {} {}".format(location_id, naics, lat, lng))
+			
+			insert_sql_statement = "INSERT INTO business_location (location_id, naics_code, lat, lng) VALUES (%s, %s, %s, %s);"
+			params = (location_id, naics, lat, lng)
+			run_sql(conn, insert_sql_statement, params)
+
 		except Exception as e:
 			print("skipping")
 
@@ -48,8 +52,6 @@ for i in range(0,10, limit_offset_counter):
 
 
 
-	insert_sql_statement = "INSERT INTO business_location (location_id, naics_code, lat, lng) VALUES (%s, %s, %s, %s);"
-	# params = (results_df.loc[i]['location_account'], lat, lng, event_time_utc, state)
 
 	# break
 	# print(csv_file + ": running sql...")
