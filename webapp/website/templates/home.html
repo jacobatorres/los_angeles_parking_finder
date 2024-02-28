@@ -7,11 +7,10 @@
 {% if user.is_authenticated %}
 
 <h1>Los Angeles Parking Finder</h1>
+<p>Click on the map and hit Submit to see nearest parking spots.</p> 
+<p>You can only click once, so click on Start Over to redo.</p>
 
 <div class = "container">
-
-	<!-- submit button -->
-
 
 	<!-- the map -->
 	<div class="row" >
@@ -20,13 +19,17 @@
 	</div>
 
 	<br />
-	<div class="row col-sm-4">
-		<button type="button" class="btn btn-primary">Submit</button>
-	</div>
-	<br />
-
 	<div class="row">
-		<p>words</p>
+		<button type="button" class="btn btn-primary col-sm-4">Submit</button>
+		<p></p>
+
+		<a href="{% url 'home' %}" role="button" class="btn btn-primary col-sm-4" >Start Over</a>
+
+	</div>
+
+	<br />
+	<div class="row">
+		<p>wordsforexplaining</p>
 	</div>
 
 </div>
@@ -38,6 +41,16 @@
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(map);
+	
+
+	map.once('click', (event) => {
+
+		let lat = event.latlng.lat
+		let lng = event.latlng.lng
+
+		L.marker([lat, lng]).addTo(map)
+		fetch(`/get-nearest-station?latitude=${lat}&longitude=${lng}`)
+	})
 
 </script>
 
