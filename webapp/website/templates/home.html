@@ -8,7 +8,6 @@
 
 <h1>Los Angeles Parking Finder</h1>
 <p>Click on the map and hit Submit to see nearest parking spots.</p> 
-<p>You can only click once, so click on Start Over to redo.</p>
 
 <div class = "container">
 
@@ -22,8 +21,6 @@
 	<div class="row">
 		<button type="button" class="btn btn-primary col-sm-4">Submit</button>
 		<p></p>
-
-		<a href="{% url 'home' %}" role="button" class="btn btn-primary col-sm-4" >Start Over</a>
 
 	</div>
 
@@ -42,14 +39,26 @@
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
 	}).addTo(map);
 	
+	var theMarker = {};
 
-	map.once('click', (event) => {
+
+	map.on('click', (event) => {
 
 		let lat = event.latlng.lat
 		let lng = event.latlng.lng
+	
+	    console.log("You clicked the map at LAT: "+ lat+" and LONG: "+lng );
 
-		L.marker([lat, lng]).addTo(map)
+
+        if (theMarker != undefined) {
+              map.removeLayer(theMarker);
+        };
+
+	    //Add a marker to show where you clicked.
+	     theMarker = L.marker([lat,lng]).addTo(map);  
+
 		fetch(`/get-nearest-station?latitude=${lat}&longitude=${lng}`)
+
 	})
 
 </script>
