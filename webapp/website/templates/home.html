@@ -20,7 +20,7 @@
 	<br />
 	<div class="row">
 
-		<button type="button" class="btn btn-primary col-sm-4" onclick="get_nearest_spots()">Submit</button>
+		<button type="button" class="btn btn-primary col-sm-4" id="submitbutton" onclick="get_nearest_spots()">Submit</button>
 		<p></p>
 
 
@@ -28,15 +28,13 @@
 
 	<br />
 	<div class="row">
-		<p>wordsforexplaining</p>
+		<p>wordsforexplaining {{ distances }} </p>
 	</div>
 
 </div>
 
 
 <script>
-
-
 
 	var map = L.map('map').setView([34.083223409290206, -118.31554603019772], 17);
 	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -45,7 +43,6 @@
 	}).addTo(map);
 	
 	var theMarker = {};
-
 
 	map.on('click', (event) => {
 
@@ -68,8 +65,20 @@
     	console.log("clicked! ")
     	lat = theMarker._latlng.lat
     	lng = theMarker._latlng.lng
-    	fetch(`/get-nearest-station?latitude=${lat}&longitude=${lng}`)
+    	fetch(`/get-nearest-station?latitude=${lat}&longitude=${lng}`).then(response => response.json()).then(result => {
+
+    		result.forEach(item => {
+    			console.log(item[0])
+    			console.log(item[1])
+    			var itemMarker = L.marker([ item[0],item[1] ]).addTo(map)
+    			itemMarker.bindPopup("Dist: " + item[2] + " km. <a href='https://www.google.com/maps/search/?api=1&query=" + item[0] + "," + item[1] + "'>Open in Maps</a> ").openPopup(); // pwede html sa loob, so maybe a href google link then distance ?
+
+    		})
+    	})
     }
+
+
+
 </script>
 
 {% else %}

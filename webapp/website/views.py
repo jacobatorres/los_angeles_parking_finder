@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages 
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from geopy.distance import geodesic
 from website.models import BusinessLocation
+import json, math
 
 def home(request):
 	# if log in, show data, else just the outside
@@ -34,16 +35,39 @@ def logout_user(request):
 
 
 def nearest_station(request):
-	print("asd")
-	stations = BusinessLocation.objects.values()
-	print(stations)
+
 	latitude = request.GET.get('latitude')
 	longitude = request.GET.get('longitude')
-	user_location = latitude, longitude
-	nearest_location_distances = {}
+	input_location = latitude, longitude
+
+	distances = {}
+
+	list_to_return = []
+
+	for datapoint in BusinessLocation.objects.all():
+		data_lat_lng = datapoint.lat, datapoint.lng
+		distance = geodesic(input_location, data_lat_lng).km
+		# distances[distance] = data_lat_lng
+		list_to_return.append([datapoint.lat, datapoint.lng, round(distance,2)])
+	# print(distances)
+	# print(data_lat_lng)
+	# print(json.dumps(distances))
+	print(list_to_return)
+	response = JsonResponse(list_to_return, safe=False)
+	print(response)
+	return response
+
+	# print("asd")
+	# stations = BusinessLocation.objects.values()
+	# print(stations)
+	# user_location = latitude, longitude
+	# nearest_location_distances = {}
+
+	# print(latitude, longitude)
+
+	# return JsonResponse({})
 
 
 
-	print(latitude, longitude)
 
-	return JsonResponse({})
+
