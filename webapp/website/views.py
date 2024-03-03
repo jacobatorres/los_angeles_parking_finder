@@ -44,11 +44,12 @@ def nearest_station(request):
 
 	list_to_return = []
 
+	# get business locations 
 	for datapoint in BusinessLocation.objects.all():
 		data_lat_lng = datapoint.lat, datapoint.lng
 		distance = geodesic(input_location, data_lat_lng).km
 		# distances[distance] = data_lat_lng
-		list_to_return.append([datapoint.lat, datapoint.lng, round(distance,2)])
+		list_to_return.append([datapoint.lat, datapoint.lng, round(distance,2), 'Business'])
 	# print(distances)
 	# print(data_lat_lng)
 	# print(json.dumps(distances))

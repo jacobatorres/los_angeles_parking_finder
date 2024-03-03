@@ -71,7 +71,7 @@
     			console.log(item[0])
     			console.log(item[1])
     			var itemMarker = L.marker([ item[0],item[1] ]).addTo(map)
-    			itemMarker.bindPopup("Dist: " + item[2] + " km. <a href='https://www.google.com/maps/search/?api=1&query=" + item[0] + "," + item[1] + "'>Open in Maps</a> ").openPopup(); // pwede html sa loob, so maybe a href google link then distance ?
+    			itemMarker.bindPopup(item[3] + ". " + item[2] + " km away. <a href='https://www.google.com/maps/search/?api=1&query=" + item[0] + "," + item[1] + "'>Open in Maps</a> ").openPopup(); // pwede html sa loob, so maybe a href google link then distance ?
 
     		})
     	})
