@@ -19,8 +19,10 @@
 
 	<br />
 	<div class="row">
-		<button type="button" class="btn btn-primary col-sm-4">Submit</button>
+
+		<button type="button" class="btn btn-primary col-sm-4" onclick="get_nearest_spots()">Submit</button>
 		<p></p>
+
 
 	</div>
 
@@ -33,6 +35,9 @@
 
 
 <script>
+
+
+
 	var map = L.map('map').setView([34.083223409290206, -118.31554603019772], 17);
 	L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
@@ -57,10 +62,14 @@
 	    //Add a marker to show where you clicked.
 	     theMarker = L.marker([lat,lng]).addTo(map);  
 
-		fetch(`/get-nearest-station?latitude=${lat}&longitude=${lng}`)
-
 	})
 
+    function get_nearest_spots() {
+    	console.log("clicked! ")
+    	lat = theMarker._latlng.lat
+    	lng = theMarker._latlng.lng
+    	fetch(`/get-nearest-station?latitude=${lat}&longitude=${lng}`)
+    }
 </script>
 
 {% else %}
