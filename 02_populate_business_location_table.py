@@ -46,11 +46,15 @@ for i in range(0,10, limit_offset_counter):
 			run_sql(conn, insert_sql_statement, params)
 
 		except Exception as e:
+			print(e)
 			print("skipping")
 
 		mini_counter += 1
 
 
+
+populate_geom_column_sql = "UPDATE business_location SET geom = ST_SetSRID(ST_MakePoint(lng,lat), 4326)"
+run_sql(conn, populate_geom_column_sql)
 
 
 	# break

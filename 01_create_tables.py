@@ -10,6 +10,8 @@ psql_password = get_secret("psql_password_value", "us-east-1")
 conn = connect_to_psql_db(psql_password)
 
 # create business table, parking table, crime table
+
+run_sql(conn, "CREATE EXTENSION postgis;")
 run_sql(conn, create_parking_location_table)
 
 run_sql(conn, create_parking_rt_table)

@@ -67,6 +67,7 @@ CREATE TABLE IF NOT EXISTS parking_location (
 	space_id VARCHAR ( 20 ) PRIMARY KEY,
 	lat float,
 	lng float
+
 )
 """
 
@@ -85,6 +86,8 @@ CREATE TABLE IF NOT EXISTS business_location (
 	location_id VARCHAR ( 20 ) PRIMARY KEY,
 	naics_code int, 
 	lat float, 
-	lng float
+	lng float,
+	geom geometry(Point, 4326)
+
 );
 """
