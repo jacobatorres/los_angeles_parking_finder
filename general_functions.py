@@ -90,12 +90,8 @@ def run_sql(conn, sql_to_run, params = ()):
 		cur = conn.cursor()
 		cur.execute(sql_to_run, params)
 		conn.commit()
-		print("sql successfully ran.")
 	except Exception as e:
-		print("error when running the sql:")
-		print(sql_to_run)
-		print(params)
-		print(e)
+		print("Error when running the sql: {}".format(e))
 		conn.rollback()
 		return e
 

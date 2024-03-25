@@ -5,6 +5,83 @@ from django.http import JsonResponse, HttpResponse
 from geopy.distance import geodesic
 from website.models import BusinessLocation
 import json, math
+import boto3, psycopg2
+
+def get_secret(secret_name, region):
+	print("Getting secret {} from {}".format(secret_name, region))
+
+	session = boto3.session.Session()
+	client = session.client(
+		service_name='secretsmanager',
+		region_name=region,
+	)
+
+
+	try:
+		get_secret_value_response = client.get_secret_value(
+			SecretId=secret_name
+		)
+	except ClientError as e:
+		if e.response['Error']['Code'] == 'ResourceNotFoundException':
+			print("The requested secret " + secret_name + " was not found")
+		elif e.response['Error']['Code'] == 'InvalidRequestException':
+			print("The request was invalid due to:", e)
+		elif e.response['Error']['Code'] == 'InvalidParameterException':
+			print("The request had invalid params:", e)
+		elif e.response['Error']['Code'] == 'DecryptionFailure':
+			print("The requested secret can't be decrypted using the provided KMS key:", e)
+		elif e.response['Error']['Code'] == 'InternalServiceError':
+			print("An error occurred on service side:", e)
+	else:
+		# Secrets Manager decrypts the secret value using the associated KMS CMK
+		# Depending on whether the secret was a string or binary, only one of these fields will be populated
+		if 'SecretString' in get_secret_value_response:
+			text_secret_data = get_secret_value_response['SecretString']
+		else:
+			binary_secret_data = get_secret_value_response['SecretBinary']
+
+		# Your code goes here.
+
+	return get_secret_value_response['SecretString']
+
+
+
+def connect_to_psql_db(psql_password):
+	client = boto3.client('rds')
+	response = client.describe_db_instances()
+	db_endpoint = ""
+	for db_instance in response['DBInstances']:
+		db_endpoint = db_instance['Endpoint']['Address']
+		if "terraform" in db_endpoint:
+			break 
+
+	try:
+		conn = psycopg2.connect(
+				host=db_endpoint,
+				database="tutorial", 
+				user="da_admin",
+				password=psql_password)
+		print("was able to connect")
+	except Exception as e:
+		print("error when connecting")
+		print(e)
+		exit(1)
+
+	return conn
+
+
+def run_sql(conn, sql_to_run, params = ()):
+	try:
+		cur = conn.cursor()
+		cur.execute(sql_to_run, params)
+		conn.commit()
+		return cur.fetchall()
+
+	except Exception as e:
+		print("Error when running the sql: {}".format(e))
+		conn.rollback()
+		return e
+
 
 def home(request):
 	# if log in, show data, else just the outside
@@ -40,33 +117,39 @@ def nearest_station(request):
 	longitude = request.GET.get('longitude')
 	input_location = latitude, longitude
 
-	distances = {}
+
+	knn_query = "SELECT ST_Distance(geom, 'SRID=4326;POINT({lng} {lat})'::geography) / 1000 as distance, lng, lat from business_location ORDER BY geom <-> 'SRID=4326;POINT({lng} {lat})'::geography limit 3".format(lng=longitude, lat=latitude)
+
+	psql_password = get_secret("psql_password_value", "us-east-1")
+	conn = connect_to_psql_db(psql_password)
+
+
+	results_sql = run_sql(conn, knn_query)
+	print(results_sql)
 
 	list_to_return = []
 
-	# get business locations 
-	for datapoint in BusinessLocation.objects.all():
-		data_lat_lng = datapoint.lat, datapoint.lng
-		distance = geodesic(input_location, data_lat_lng).km
-		# distances[distance] = data_lat_lng
-		list_to_return.append([datapoint.lat, datapoint.lng, round(distance,2), 'Business'])
-	# print(distances)
-	# print(data_lat_lng)
-	# print(json.dumps(distances))
-	print(list_to_return)
+	for datapoint in results_sql:
+		datapoint_dist = datapoint[0]
+		datapoint_lng = datapoint[1]
+		datapoint_lat = datapoint[2]
+		# datapoint_business_name = business name
+
+		list_to_return.append([datapoint_lat, datapoint_lng, round(datapoint_dist, 2), 'Business'])
+
+
 	response = JsonResponse(list_to_return, safe=False)
-	print(response)
+
 	return response
 
-	# print("asd")
-	# stations = BusinessLocation.objects.values()
-	# print(stations)
-	# user_location = latitude, longitude
-	# nearest_location_distances = {}
 
-	# print(latitude, longitude)
 
-	# return JsonResponse({})
+
+
+
+
+
+
 
 
 

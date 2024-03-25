@@ -10,7 +10,7 @@ Datasets used:
 	42* 		Wholesale Trade
 	44*-45* 	Retail Trade
 	71* 		Arts Entertainment Recrration
-	812* 		Personal and Laundry Services
+	81* 		Other Services (except Public Administration)
 	```
 
 

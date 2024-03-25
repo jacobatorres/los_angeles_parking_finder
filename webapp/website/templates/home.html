@@ -61,6 +61,7 @@
 
     function get_nearest_spots() {
     	console.log("clicked! ")
+
     	lat = theMarker._latlng.lat
     	lng = theMarker._latlng.lng
     	fetch(`/get-nearest-station?latitude=${lat}&longitude=${lng}`).then(response => response.json()).then(result => {
