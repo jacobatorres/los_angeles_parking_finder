@@ -118,7 +118,7 @@ def nearest_station(request):
 	input_location = latitude, longitude
 
 
-	knn_query = "SELECT ST_Distance(geom, 'SRID=4326;POINT({lng} {lat})'::geography) / 1000 as distance, lng, lat from business_location ORDER BY geom <-> 'SRID=4326;POINT({lng} {lat})'::geography limit 3".format(lng=longitude, lat=latitude)
+	knn_query = "SELECT ST_Distance(geom, 'SRID=4326;POINT({lng} {lat})'::geography) / 1000 as distance, lng, lat, business_name from business_location ORDER BY geom <-> 'SRID=4326;POINT({lng} {lat})'::geography limit 3".format(lng=longitude, lat=latitude)
 
 	psql_password = get_secret("psql_password_value", "us-east-1")
 	conn = connect_to_psql_db(psql_password)
@@ -133,9 +133,10 @@ def nearest_station(request):
 		datapoint_dist = datapoint[0]
 		datapoint_lng = datapoint[1]
 		datapoint_lat = datapoint[2]
+		datapoint_business_name = datapoint[3]
 		# datapoint_business_name = business name
 
-		list_to_return.append([datapoint_lat, datapoint_lng, round(datapoint_dist, 2), 'Business'])
+		list_to_return.append([datapoint_lat, datapoint_lng, round(datapoint_dist, 2), datapoint_business_name])
 
 
 	response = JsonResponse(list_to_return, safe=False)

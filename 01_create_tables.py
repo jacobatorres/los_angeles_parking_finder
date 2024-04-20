@@ -72,22 +72,28 @@ create_parking_location_table = """
 CREATE TABLE IF NOT EXISTS parking_location (
 	space_id VARCHAR ( 20 ) PRIMARY KEY,
 	lat float,
-	lng float
-
+	lng float,
+	geom geometry(Point, 4326)
 )
 """
+
+# select ...
+# from parking_location pl 
+# join parking_real_time prt using (spaceID)
+# ORDER BY pl.geom <-> 'SRID=4326;POINT({lng} {lat})'::geography limit 3
+
+# 	knn_query = "SELECT ST_Distance(geom, 'SRID=4326;POINT({lng} {lat})'::geography) / 1000 as distance, lng, lat, business_name from business_location ORDER BY geom <-> 'SRID=4326;POINT({lng} {lat})'::geography limit 3".format(lng=longitude, lat=latitude)
 
 
 create_parking_rt_table = """
 CREATE TABLE IF NOT EXISTS parking_real_time (
-	id INT PRIMARY KEY, 
+	id BIGSERIAL PRIMARY KEY, 
 	space_id VARCHAR ( 20 ) NOT NULL,
 	event_time timestamptz,
-	occupancy_state VARCHAR ( 10 ),
-	FOREIGN KEY (space_id) REFERENCES parking_location (space_id)
+	occupancy_state VARCHAR ( 10 )
 )
 """
-
+# , FOREIGN KEY (space_id) REFERENCES parking_location (space_id) -- uncomment once we can get data from
 
 business_location_table = """
 CREATE TABLE IF NOT EXISTS business_location (
@@ -95,6 +101,7 @@ CREATE TABLE IF NOT EXISTS business_location (
 	naics_code int, 
 	lat float, 
 	lng float,
+	business_name VARCHAR ( 100 ), 
 	geom geometry(Point, 4326)
 
 );
@@ -107,4 +114,19 @@ run_sql(conn, create_parking_location_table)
 run_sql(conn, create_parking_rt_table)
 
 run_sql(conn, business_location_table)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

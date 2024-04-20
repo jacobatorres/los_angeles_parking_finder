@@ -67,10 +67,14 @@
     	fetch(`/get-nearest-station?latitude=${lat}&longitude=${lng}`).then(response => response.json()).then(result => {
 
     		result.forEach(item => {
-    			console.log(item[0])
-    			console.log(item[1])
-    			var itemMarker = L.marker([ item[0],item[1] ]).addTo(map)
-    			itemMarker.bindPopup(item[3] + ". " + item[2] + " km away. <a href='https://www.google.com/maps/search/?api=1&query=" + item[0] + "," + item[1] + "'>Open in Maps</a> ").openPopup(); // pwede html sa loob, so maybe a href google link then distance ?
+
+    			datapoint_lat = item[0]
+    			datapoint_lng = item[1]
+    			datapoint_dist = item[2]
+    			datapoint_business_name = item[3]
+
+    			var itemMarker = L.marker([ datapoint_lat,datapoint_lng ]).addTo(map)
+    			itemMarker.bindPopup("(Business) " + datapoint_business_name + ". " + datapoint_dist + " km away. <a href='https://www.google.com/maps/search/?api=1&query=" + datapoint_lat + "," + datapoint_lng + "'>Open in Maps</a> ").openPopup(); // pwede html sa loob, so maybe a href google link then distance ?
 
     		})
     	})
