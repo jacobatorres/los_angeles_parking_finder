@@ -90,7 +90,8 @@ CREATE TABLE IF NOT EXISTS parking_real_time (
 	id BIGSERIAL PRIMARY KEY, 
 	space_id VARCHAR ( 20 ) NOT NULL,
 	event_time timestamptz,
-	occupancy_state VARCHAR ( 10 )
+	occupancy_state VARCHAR ( 10 ),
+	FOREIGN KEY (space_id) REFERENCES parking_location (space_id)
 )
 """
 # , FOREIGN KEY (space_id) REFERENCES parking_location (space_id) -- uncomment once we can get data from

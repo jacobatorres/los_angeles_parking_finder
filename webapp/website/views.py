@@ -118,25 +118,62 @@ def nearest_station(request):
 	input_location = latitude, longitude
 
 
-	knn_query = "SELECT ST_Distance(geom, 'SRID=4326;POINT({lng} {lat})'::geography) / 1000 as distance, lng, lat, business_name from business_location ORDER BY geom <-> 'SRID=4326;POINT({lng} {lat})'::geography limit 3".format(lng=longitude, lat=latitude)
+	knn_query_business = "SELECT ST_Distance(geom, 'SRID=4326;POINT({lng} {lat})'::geography) / 1000 as distance, lng, lat, business_name from business_location ORDER BY geom <-> 'SRID=4326;POINT({lng} {lat})'::geography limit 3".format(lng=longitude, lat=latitude)
+
+	# from https://stackoverflow.com/questions/586781/postgresql-fetch-the-rows-which-have-the-max-value-for-a-column-in-each-group 
+
+	knn_query_parking ="""
+		with latest_records as 
+		(SELECT DISTINCT ON (space_id)
+		    event_time,
+		    occupancy_state,
+		    space_id
+		FROM parking_real_time prt 
+		ORDER BY space_id, event_time desc) 
+		select ST_Distance(pl.geom, 'SRID=4326;POINT({lng} {lat})'::geography) / 1000 as distance, pl.lng, pl.lat, 'VACANT' as state
+		from parking_location pl 
+		join latest_records lr 
+		on pl.space_id  = lr.space_id
+		where  lr.occupancy_state = 'VACANT'
+		ORDER BY pl.geom <-> 'SRID=4326;POINT({lng} {lat})'::geography limit 3
+
+	""".format(lng=longitude, lat=latitude)
+	print(knn_query_parking)
 
 	psql_password = get_secret("psql_password_value", "us-east-1")
 	conn = connect_to_psql_db(psql_password)
 
 
-	results_sql = run_sql(conn, knn_query)
-	print(results_sql)
+	results_sql_business = run_sql(conn, knn_query_business)
+	print(results_sql_business)
+
+
+	results_sql_parking = run_sql(conn, knn_query_parking)
+	print(results_sql_parking)
+	print("asd")
+
 
 	list_to_return = []
 
-	for datapoint in results_sql:
+	for datapoint in results_sql_business:
 		datapoint_dist = datapoint[0]
 		datapoint_lng = datapoint[1]
 		datapoint_lat = datapoint[2]
 		datapoint_business_name = datapoint[3]
 		# datapoint_business_name = business name
 
-		list_to_return.append([datapoint_lat, datapoint_lng, round(datapoint_dist, 2), datapoint_business_name])
+		list_to_return.append([datapoint_lat, datapoint_lng, round(datapoint_dist, 2), datapoint_business_name, 'Business'])
+
+
+	for datapoint in results_sql_parking:
+		datapoint_dist = datapoint[0]
+		datapoint_lng = datapoint[1]
+		datapoint_lat = datapoint[2]
+		datapoint_parking_state = datapoint[3]
+		# datapoint_business_name = business name
+		print("here")
+		list_to_return.append([datapoint_lat, datapoint_lng, round(datapoint_dist, 2), datapoint_parking_state, 'Parking'])
+
 
 
 	response = JsonResponse(list_to_return, safe=False)

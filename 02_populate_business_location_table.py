@@ -32,42 +32,41 @@ def get_data_from_la_city(client, url_suffix, limit, offset, orderby):
 
 # https://dev.socrata.com/docs/queries/offset
 # 585000 rows as of this writing
-for i in range(0,300, limit_value):
-	print("limit is {}, offset is {}".format(limit_value, i))
-	business_results_2 = get_data_from_la_city(client, data_code_dictionary['business'][0], limit_value, i, "location_account ASC")
-	results_df_2 = pd.DataFrame.from_records(business_results_2)
+for i in range(0,102800, limit_value):
+	break
 
-	mini_counter = 0
-	while mini_counter < limit_value:
+	try:
+		print("limit is {}, offset is {}".format(limit_value, i))
+		business_results_2 = get_data_from_la_city(client, data_code_dictionary['business'][0], limit_value, i, "location_account ASC")
+		results_df_2 = pd.DataFrame.from_records(business_results_2)
 
-		try:
-			location_id = results_df_2.loc[mini_counter]['location_account']
-			naics_raw = str(results_df_2.loc[mini_counter]['naics'])
-			naics = int(float(naics_raw))
-			lat = float(results_df_2.loc[mini_counter]['location_1']['latitude'])
-			lng = float(results_df_2.loc[mini_counter]['location_1']['longitude'])
-			business_name = results_df_2.loc[mini_counter]['business_name']
+		mini_counter = 0
+		while mini_counter < limit_value:
 
-			if naics_raw[:2] in ['42', '44', '45', '71', '81']:		
-				insert_sql_statement = "INSERT INTO business_location (location_id, naics_code, lat, lng, business_name) VALUES (%s, %s, %s, %s, %s);"
-				params = (location_id, naics, lat, lng, business_name)
-				run_sql(conn, insert_sql_statement, params)
+			try:
+				location_id = results_df_2.loc[mini_counter]['location_account']
+				naics_raw = str(results_df_2.loc[mini_counter]['naics'])
+				naics = int(float(naics_raw))
+				lat = float(results_df_2.loc[mini_counter]['location_1']['latitude'])
+				lng = float(results_df_2.loc[mini_counter]['location_1']['longitude'])
+				business_name = results_df_2.loc[mini_counter]['business_name']
 
-		except Exception as e:
-			print("Skipping, error when running SQL: {}".format(e))
+				if naics_raw[:2] in ['42', '44', '45', '71', '81']:		
+					insert_sql_statement = "INSERT INTO business_location (location_id, naics_code, lat, lng, business_name) VALUES (%s, %s, %s, %s, %s);"
+					params = (location_id, naics, lat, lng, business_name)
+					run_sql(conn, insert_sql_statement, params)
 
-		mini_counter += 1
+			except Exception as e:
+				print("Skipping, error when running SQL: {}".format(e))
+
+			mini_counter += 1
+	except Exception as e:
+		print("probably indexing error, skipping")
+		break
 
 
-
+print("update to add in column")
 populate_geom_column_sql = "UPDATE business_location SET geom = ST_SetSRID(ST_MakePoint(lng,lat), 4326)"
 run_sql(conn, populate_geom_column_sql)
-
-
-	# break
-	# print(csv_file + ": running sql...")
-	# run_sql(conn, insert_sql_statement, params)
-
-
 
 

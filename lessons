@@ -1,0 +1,14 @@
+lessons
+
+- generating business data: some items dont have long lat, so it skips recording them. good idea to use gogole api to manually get their long lat values
+
+- do the data import first, then create the index
+
+- the winnign sql in # from https://stackoverflow.com/questions/586781/postgresql-fetch-the-rows-which-have-the-max-value-for-a-column-in-each-group 
+
+- not as much metered parking data as we want, but it's alright. could have also modified business, but for the demo I just set it to 100k data
+
+
+
+- redundant data for spaceID
+
