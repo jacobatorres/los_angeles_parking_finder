@@ -1,4 +1,14 @@
-The app will ask for these parameters: the general location of where you want to park, when you want to park, and the radius of parking (setting this to either 1 mile or 0.5 mile for simplicity). Then it will use data from the Lacity website to provide you the top parking areas that most likely has parking, and the top business areas that might have parking.
+To access the app, go to https://3.209.240.80:8000/. Message me on the username / password. 
+
+Once logged in, the app will provide a map, and you can point in the map. 
+[picture1](readme_pics/pic1.png)
+
+Click submit, and it will show the nearby parking spots and nearby business spots.
+
+
+
+
+The app will provide parking spots with near : the general location of where you want to park, when you want to park, and the radius of parking (setting this to either 1 mile or 0.5 mile for simplicity). Then it will use data from the Lacity website to provide you the top parking areas that most likely has parking, and the top business areas that might have parking.
 
 
 Datasets used:
