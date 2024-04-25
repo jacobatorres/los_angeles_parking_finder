@@ -2,7 +2,7 @@
 
 To access the app, go to http://3.209.240.80:8000/. Message me (jacobangelo_torres@yahoo.com) on the username / password. 
 
-Once logged in, the app will provide a map, and you can point in the map. 
+Once logged in, the app will provide a map, and you can select a point in the map where you want to see nearby parking spots. 
 
 <img src="readme_pics/before.png" alt="drawing" width="400"/>
 
