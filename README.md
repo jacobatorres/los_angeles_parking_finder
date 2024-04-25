@@ -2,7 +2,7 @@ To access the app, go to https://3.209.240.80:8000/. Message me on the username 
 
 Once logged in, the app will provide a map, and you can point in the map. 
 
-<img src="readme_pics/pic1.png" alt="drawing" width="200"/>
+<img src="readme_pics/pic1.png" alt="drawing" width="400"/>
 
 Click submit, and it will show the nearby parking spots and nearby business spots.
 
