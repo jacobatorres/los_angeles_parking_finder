@@ -1,3 +1,5 @@
+## Accessing the application
+
 To access the app, go to https://3.209.240.80:8000/. Message me on the username / password. 
 
 Once logged in, the app will provide a map, and you can point in the map. 
@@ -9,7 +11,7 @@ Click submit, and it will show the nearby parking spots and nearby business spot
 <img src="readme_pics/after.png" alt="drawing" width="400"/>
 
 
-Datasets used:
+## Datasets used
 	
 1. Active Businesses  
 	- https://data.lacity.org/Administration-Finance/Listing-of-Active-Businesses/6rrh-rzua
@@ -23,13 +25,13 @@ Datasets used:
 	- The dataset has around 500,000 rows but I only read 100,000 rows to save costs.
 
 
-
 2. Parking
 	- https://data.lacity.org/Transportation/LADOT-Metered-Parking-Inventory-Policies/s49e-q6j2 (has SpaceID, LatLong)
 	- https://data.lacity.org/Transportation/LADOT-Parking-Meter-Occupancy/e7h6-4a3e (has SpaceID, Time, OccupancyState) (merge with #1)
 
 
-How to run this tool locally:
+## How to run this tool locally
+
 1. Make sure the infrastructure is set up. Terraform code to set it up is in https://github.com/jacobatorres/terraform/tree/main/apartment_finder_airflow
 	- git clone that repo, then run go to github_repos/terraform/apartment_finder_airflow/examples/basic. Then run `terraform init; terraform plan -out theplan -var-file="secrets.tfvars"; terraform apply`
 	- the terraform will ask for your machine's local IP address, you can put that in the secrets.tfvars file. Here's what my secrets.tfvars looked like:
