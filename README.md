@@ -33,22 +33,30 @@ Click submit, and it will show the nearby parking spots and nearby business spot
 
 There are three tables that's in the database: business_location, parking_location and parking_real_time (more info on their columns in the comments on https://github.com/jacobatorres/los_angeles_parking_finder/blob/main/01_create_tables.py).
 
-Whenever the 'Submit' button is clicked, using the longitude and latitude value of the point input, I check the nearest three business points in business_location, and I check the VACANT spots in parking_location. I utilize Postgis to get the nearest neighbor for both business and parking data. This involves creating a geometry column and making an index on that column so that the nearest points/neighbors. The SQL command to get the nearest points are in https://github.com/jacobatorres/los_angeles_parking_finder/blob/1e7d03f0ecb7524664dfdd9e426d4763ca91d2e0/webapp/website/views.py#L121. For more info on knn / nearest neighbors, please see https://postgis.net/workshops/postgis-intro/knn.html 
+Whenever the 'Submit' button is clicked, using the longitude and latitude value of the point input, I check the nearest three business points in business_location, and I check the nearest three VACANT spots in parking_location. I utilize Postgis to get the nearest neighbor for both business and parking data. This involves creating a geometry column and making an index on that column so that the nearest points/neighbors. The SQL command to get the nearest points are in 
+
+https://github.com/jacobatorres/los_angeles_parking_finder/blob/1e7d03f0ecb7524664dfdd9e426d4763ca91d2e0/webapp/website/views.py#L121 
+
+and 
+
+https://github.com/jacobatorres/los_angeles_parking_finder/blob/1e7d03f0ecb7524664dfdd9e426d4763ca91d2e0/webapp/website/views.py#L125. 
+
+For more info on knn / nearest neighbors, please see https://postgis.net/workshops/postgis-intro/knn.html 
 
 Tech Used: Django (for creating the web application), python scripts (for creating tables and populating business_location and parking_location tables), Airflow / MWAA (for continuously inserting/deleting data in parking_real_time table)
 
 ## Limitations, Challenges, Lessons
 
-	- The business dataset (6rrh-rzua) has around 500,000 rows but I only read 100,000 rows to save costs. Also, within those 100,000 rows, some records don't have longitude/latitude. Using another API to generate longitude/latitude for certain data points would help make the search more accurate.
-	- It is recommended to populate the data first before creating the index. 
-	- Data could also be cleaner. There are duplicate records and typographical errors.
-	- Metered parking spots in Los Angeles are limited, and so it's common that the nearest parking spot is more than 1 km away.
+- The business dataset (6rrh-rzua) has around 500,000 rows but I only read 100,000 rows to save costs. Also, within those 100,000 rows, some records don't have longitude/latitude. Using another API to generate longitude/latitude for certain data points would help make the search more accurate.
+- It is recommended to populate the data first before creating the index. 
+- Data could also be cleaner. There are duplicate records and typographical errors.
+- Metered parking spots in Los Angeles are limited, and so it's common that the nearest parking spot is more than 1 km away.
 
 
 ## How to run this tool locally
 
 1. Make sure the infrastructure is set up. Terraform code to set it up is in https://github.com/jacobatorres/terraform/tree/main/apartment_finder_airflow
-	- git clone that repo, then run go to github_repos/terraform/apartment_finder_airflow/examples/basic. Then run `terraform init; terraform plan -out theplan -var-file="secrets.tfvars"; terraform apply`
+	- git clone that repo, then run go to github_repos/terraform/apartment_finder_airflow/examples/basic. Then run `terraform init; terraform plan -out theplan -var-file="secrets.tfvars"; terraform apply theplan`
 	- the terraform will ask for your machine's local IP address, you can put that in the secrets.tfvars file. Here's what my secrets.tfvars looked like:
 
 	```
